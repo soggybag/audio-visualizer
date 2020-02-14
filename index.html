@@ -1,0 +1,343 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Audio Visualizer</title>
+    <style>
+      body, html {
+        height: 100%;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      #canvas {
+        border: 1px solid;
+      }
+
+      button {
+        margin: 5px;
+        padding: 1em;
+        border-radius: 0.25em;
+        border: 1px solid;
+      }
+    </style>
+  </head>
+  <body>
+
+    <canvas id="canvas" width="300" height="300"></canvas>
+    <button id="button-play">Play</button>
+    <button id="button-pause">Pause</button>
+
+    <script>
+
+      // https://www.kkhaydarov.com/audio-visualizer/
+      // https://medium.com/@duraraxbaccano/computer-art-visualize-your-music-in-javascript-with-your-browser-part-2-fa1a3b73fdc6
+
+      const playButton = document.getElementById('button-play')
+
+      playButton.addEventListener('click', (e) => {
+        // setup()
+        startAudio()
+      })
+
+      const pauseButton = document.getElementById('button-pause')
+
+      pauseButton.addEventListener('click', (e) => {
+        // setup()
+        audio.pause()
+      })
+
+      // --------------------------------------------------------
+      // Audio
+
+      let analyser
+      let frequencyArray
+      let audio
+
+      function startAudio() {
+        audio = new Audio()
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+        
+        audio.src = 'bird-whistling-a.wav'
+        // audio.src = 'log-sine-sweep.wav'
+
+        analyser = audioContext.createAnalyser()
+        const source = audioContext.createMediaElementSource(audio)
+        source.connect(analyser)
+        analyser.connect(audioContext.destination)
+
+        frequencyArray = new Uint8Array(analyser.frequencyBinCount)
+        
+        audio.play()
+
+        render()
+      }
+
+      function setup() {
+        const audio = new Audio()
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+        analyser = audioContext.createAnalyser()
+
+        const p = audio.play()
+        render()
+      }
+      
+      // --------------------------------------------------------
+      // Canvas
+
+      const canvas = document.getElementById('canvas')
+      const ctx = canvas.getContext('2d')
+
+      const centerX = 300 / 2
+      const centerY = 300 / 2
+      const radius = 300 / 5
+
+      function render7() {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
+        ctx.fillRect(0, 0, 300, 300)
+        ctx.fill()
+
+        analyser.getByteFrequencyData(frequencyArray)
+
+        const bars = frequencyArray.length 
+        const step = 300 / 32
+        const colorStep = 360 / bars
+        const pi2 = Math.PI * 2
+
+        // Draw circles in a grid
+        frequencyArray.forEach((f, i) => {
+          // SCale f to 0 - 30
+          const radius = f / 255 * 30
+          // calculate x and y as grid 
+          const x = i % 32 * step
+          const y = Math.floor(i / 32) * step
+          // Start new path
+          ctx.beginPath()
+          // draw circle at x and y of radius
+          ctx.arc(x, y, radius, 0, pi2)
+          // set fill color
+          ctx.fillStyle = `hsla(${colorStep * i}, 100%, 50%, 0.15)`
+          ctx.fill()
+        })
+        
+        requestAnimationFrame(render)
+      }
+
+      // ----------------------------------------------------------------
+
+      function render6() {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
+        ctx.fillRect(0, 0, 300, 300)
+        ctx.fill()
+
+        analyser.getByteFrequencyData(frequencyArray)
+
+        const bars = frequencyArray.length 
+        const step = 300 / bars
+        const colorStep = 360 / bars
+        const pi2 = Math.PI * 2
+
+        // Draw circles in a grid
+        frequencyArray.forEach((f, i) => {
+          // SCale f to 0 - 30
+          const radius = f / 255 * 30
+          // calculate x and y as grid 
+          const x = i % 20 * 15
+          const y = Math.floor(i / 20) * 15
+          // Start new path
+          ctx.beginPath()
+          // draw circle at x and y of radius
+          ctx.arc(x, y, radius, 0, pi2)
+          // set fill color
+          ctx.fillStyle = `hsla(${colorStep * i}, 100%, 50%, 0.15)`
+          ctx.fill()
+        })
+        
+        requestAnimationFrame(render)
+      }
+
+      // -------------------------------------------------
+
+      function render5() {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.21)'
+        ctx.fillRect(0, 0, 300, 300)
+        ctx.fill()
+
+        analyser.getByteFrequencyData(frequencyArray)
+
+        const bars = frequencyArray.length 
+        const step = 300 / bars
+        const colorStep = 360 / bars
+        const pi2 = Math.PI * 2
+
+        // Draw circles centered in canvas
+        frequencyArray.forEach((f, i) => {
+          // scale f to 0 - 300
+          const radius = f / 255 * 300
+          // Begin a new path
+          ctx.beginPath()
+          // Draw a circle of radius
+          ctx.arc(centerX, centerY, radius, 0, pi2)
+          // set stroke color
+          ctx.strokeStyle = `hsla(${colorStep * i}, 100%, 50%, 0.1)`
+          // stroke path
+          ctx.stroke()
+        })
+        
+        
+
+        requestAnimationFrame(render)
+      }
+
+      // -------------------------------------------------------
+
+      function render4() {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)'
+        ctx.fillRect(0, 0, 300, 300)
+        ctx.fill()
+
+        analyser.getByteFrequencyData(frequencyArray)
+
+        const bars = frequencyArray.length 
+        const step = 300 / bars
+        const colorStep = 360 / bars
+
+        // Draw each bar in a color based on frequency
+        // Draws bars vertically like a graph
+        frequencyArray.forEach((f, i) => {
+          const barLength = f / 255 * 300
+          const x1 = step * i // x steps across canvas
+          const y1 = 300 // y starts at bottom of canvas
+          const x2 = x1 // x2 matches x1
+          const y2 = 300 - barLength // y2 bar length
+          // begin a new path
+          ctx.beginPath()
+          // draw the path
+          ctx.moveTo(x1, y1)
+          ctx.lineTo(x2, y2)
+          // set the stroke color
+          ctx.strokeStyle = `hsla(${colorStep * i}, 100%, 50%, 1.0)`
+          ctx.stroke()
+        })
+        
+        requestAnimationFrame(render)
+      }
+
+      // ------------------------------------------------------
+
+      function render3() {
+        ctx.beginPath()
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.21)'
+        ctx.fillRect(0, 0, 300, 300)
+        ctx.fill()
+
+        analyser.getByteFrequencyData(frequencyArray)
+
+        const bars = frequencyArray.length 
+        const step = 300 / bars
+
+        frequencyArray.forEach((f, i) => {
+          const barLength = f / 255 * 300
+
+          const x1 = step * i
+          const y1 = 300
+          const x2 = x1 
+          const y2 = 300 - barLength
+
+          ctx.moveTo(x1, y1)
+          ctx.lineTo(x2, y2)
+
+        })
+        
+        ctx.strokeStyle = 'red'
+        ctx.stroke()
+
+        requestAnimationFrame(render)
+      }
+
+      // ---------------------------------
+
+      function render2() {
+        ctx.beginPath()
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.21)'
+        ctx.fillRect(0, 0, 300, 300)
+        ctx.fill()
+
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
+        ctx.strokeStyle = 'red'
+        ctx.stroke()
+
+        const bars = 200
+        const step = Math.PI * 2 / bars
+
+        analyser.getByteFrequencyData(frequencyArray)
+
+        // for (let i = 0; i < bars; i += 1) {
+        frequencyArray.forEach((f, i) => {
+          const barLength = f * 0.5
+          const x1 = (Math.cos(step * i) * radius) + centerX
+          const y1 = (Math.sin(step * i) * radius) + centerY
+          const x2 = (Math.cos(step * i) * (radius + barLength)) + centerX
+          const y2 = (Math.sin(step * i) * (radius + barLength)) + centerY
+
+          ctx.moveTo(x1, y1)
+          ctx.lineTo(x2, y2)
+
+        })
+          
+        // }
+        ctx.stroke()
+
+        requestAnimationFrame(render)
+      }
+
+      // -------------------------------------
+
+      function render() {
+        ctx.clearRect(0, 0, 300, 300)
+
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
+        ctx.strokeStyle = 'red'
+        ctx.stroke()
+
+        const bars = 200
+        const step = Math.PI * 2 / bars
+
+        analyser.getByteFrequencyData(frequencyArray)
+
+        // for (let i = 0; i < bars; i += 1) {
+        frequencyArray.forEach((f, i) => {
+          const normalizedF = f / 255 // 0.0 - 1.0
+          const barLength = f * 0.5
+          const x1 = (Math.cos(step * i) * radius) + centerX
+          const y1 = (Math.sin(step * i) * radius) + centerY
+          const x2 = (Math.cos(step * i) * (radius + barLength)) + centerX
+          const y2 = (Math.sin(step * i) * (radius + barLength)) + centerY
+
+          // Things to do
+          // ctx.strokeStyle - stroke color
+          // ctx.strokeWidth - stroke width
+          // ctx.arc(x, y, radius, 0, Math.PI * 2) - draw a cricle at x, y of radius
+          // ctx.rect(x, y, width, height) - draw rectangle 
+          // ctx.fillStyle - fill color
+          // ctx.fill() - fills with style 
+
+          ctx.moveTo(x1, y1)
+          ctx.lineTo(x2, y2)
+        })
+          
+        // }
+        ctx.stroke()
+
+        requestAnimationFrame(render)
+      }
+
+    </script>
+  </body>
+</html>
