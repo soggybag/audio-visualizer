@@ -34,22 +34,26 @@
 
     <script>
 
+      // Notes 
       // https://www.kkhaydarov.com/audio-visualizer/
       // https://medium.com/@duraraxbaccano/computer-art-visualize-your-music-in-javascript-with-your-browser-part-2-fa1a3b73fdc6
 
+
+      // ----------------------------------------------------------
+      // Buttons 
       const playButton = document.getElementById('button-play')
+      const pauseButton = document.getElementById('button-pause')
 
       playButton.addEventListener('click', (e) => {
         // setup()
         startAudio()
       })
 
-      const pauseButton = document.getElementById('button-pause')
-
       pauseButton.addEventListener('click', (e) => {
         // setup()
         audio.pause()
       })
+
 
       // --------------------------------------------------------
       // Audio
@@ -74,7 +78,14 @@
         
         audio.play()
 
-        render()
+        // renderCircles()
+        // renderCirclesGrid()
+        // renderCircleCenter()
+        // renderBars()
+        // render3()
+        // renderBarsMono()
+        // renderRadial()
+        render9()
       }
 
       function setup() {
@@ -83,7 +94,8 @@
         analyser = audioContext.createAnalyser()
 
         const p = audio.play()
-        render()
+        // renderCircles()
+        renderCircles2()
       }
       
       // --------------------------------------------------------
@@ -96,7 +108,8 @@
       const centerY = 300 / 2
       const radius = 300 / 5
 
-      function render7() {
+      // Draw circles in a grid
+      function renderCircles() {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
         ctx.fillRect(0, 0, 300, 300)
         ctx.fill()
@@ -124,12 +137,12 @@
           ctx.fill()
         })
         
-        requestAnimationFrame(render)
+        requestAnimationFrame(renderCircles)
       }
 
       // ----------------------------------------------------------------
-
-      function render6() {
+      // Draws circle
+      function renderCirclesGrid() {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
         ctx.fillRect(0, 0, 300, 300)
         ctx.fill()
@@ -143,7 +156,7 @@
 
         // Draw circles in a grid
         frequencyArray.forEach((f, i) => {
-          // SCale f to 0 - 30
+          // Scale f to 0 - 30
           const radius = f / 255 * 30
           // calculate x and y as grid 
           const x = i % 20 * 15
@@ -157,12 +170,12 @@
           ctx.fill()
         })
         
-        requestAnimationFrame(render)
+        requestAnimationFrame(renderCirclesGrid)
       }
 
       // -------------------------------------------------
-
-      function render5() {
+      // Draw circle from center
+      function renderCircleCenter() {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.21)'
         ctx.fillRect(0, 0, 300, 300)
         ctx.fill()
@@ -190,12 +203,12 @@
         
         
 
-        requestAnimationFrame(render)
+        requestAnimationFrame(renderCircleCenter)
       }
 
       // -------------------------------------------------------
-
-      function render4() {
+      // Draws bars
+      function renderBars() {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.1)'
         ctx.fillRect(0, 0, 300, 300)
         ctx.fill()
@@ -224,12 +237,12 @@
           ctx.stroke()
         })
         
-        requestAnimationFrame(render)
+        requestAnimationFrame(renderBars)
       }
 
       // ------------------------------------------------------
-
-      function render3() {
+      // Draw monochrome bars
+      function renderBarsMono() {
         ctx.beginPath()
         ctx.fillStyle = 'rgba(255, 255, 255, 0.21)'
         ctx.fillRect(0, 0, 300, 300)
@@ -237,7 +250,7 @@
 
         analyser.getByteFrequencyData(frequencyArray)
 
-        const bars = frequencyArray.length 
+        const bars = frequencyArray.length
         const step = 300 / bars
 
         frequencyArray.forEach((f, i) => {
@@ -256,12 +269,12 @@
         ctx.strokeStyle = 'red'
         ctx.stroke()
 
-        requestAnimationFrame(render)
+        requestAnimationFrame(renderBarsMono)
       }
 
       // ---------------------------------
-
-      function render2() {
+      // Draw raidal
+      function renderRadial() {
         ctx.beginPath()
         ctx.fillStyle = 'rgba(255, 255, 255, 0.21)'
         ctx.fillRect(0, 0, 300, 300)
@@ -293,12 +306,12 @@
         // }
         ctx.stroke()
 
-        requestAnimationFrame(render)
+        requestAnimationFrame(renderRadial)
       }
 
       // -------------------------------------
 
-      function render() {
+      function render9() {
         ctx.clearRect(0, 0, 300, 300)
 
         ctx.beginPath()
@@ -335,7 +348,7 @@
         // }
         ctx.stroke()
 
-        requestAnimationFrame(render)
+        requestAnimationFrame(render9)
       }
 
     </script>
